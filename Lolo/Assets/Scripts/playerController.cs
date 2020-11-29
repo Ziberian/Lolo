@@ -6,6 +6,7 @@ public class playerController : MonoBehaviour
 {
     Rigidbody2D rigidbody2d;
     float horizontal;
+    float horizontalRaw;
     public float speed = 4.0f;
 
     //jumping
@@ -23,9 +24,7 @@ public class playerController : MonoBehaviour
 
     //animation
     Animator animator;
-    public float lookDirection;
-    public float runDirection;
-    public float animationSpeed;
+    public bool facingRight;
     //true = looking to the right
 
     void Start()
@@ -34,6 +33,8 @@ public class playerController : MonoBehaviour
 
         //animation
         animator = GetComponent<Animator>();
+        facingRight = true;
+        
     }
 
     void Update()
@@ -42,76 +43,34 @@ public class playerController : MonoBehaviour
         BetterJump();
         Move();
         CheckIfGrounded();
-
-        lookDirection = Input.GetAxisRaw("Horizontal");
+        //Falling();
 
         //animation
-        animationSpeed = rigidbody2d.velocity.x;
-        animationSpeed = Mathf.Abs(animationSpeed);
-
-        Debug.Log(animationSpeed);
-
-        if (animationSpeed <= 0)
-        {
-            if (lookDirection == -1.0f)
-            {
-                animator.SetFloat("lookDirectionFloat", -1.0f);
-            }
-            else if (lookDirection == 1.0f)
-            {
-                animator.SetFloat("lookDirectionFloat", 1.0f);
-            }  
-
-            animator.SetFloat("runDirectionFloat", 0);   
-        }
-        else
-        {
-             if (lookDirection == -1.0f)
-            {   
-                animator.SetFloat("runDirectionFloat", -1.0f);
-            }
-            else if (lookDirection == 1.0f)
-            {   
-                animator.SetFloat("runDirectionFloat", 1.0f);
-            }     
-
-            animator.SetFloat("runDirectionFloat", animationSpeed);
-        }
-
-        
-
-        if (lookDirection == -1.0f)
-        {
-            animator.SetFloat("lookDirectionFloat", -1.0f);
-        }
-        else if (lookDirection == 1.0f)
-        {
-            animator.SetFloat("lookDirectionFloat", 1.0f);
-        }
+        animator.SetFloat("runDirectionFloat", rigidbody2d.velocity.magnitude);
     }
 
     void FixedUpdate()
     {
-        
+        horizontal = Input.GetAxis("Horizontal");
+        Flip(horizontal);
     }
 
     void Move()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal"); 
-        float moveBy = horizontal * speed; 
+        horizontalRaw = Input.GetAxisRaw("Horizontal");
+        float moveBy = horizontalRaw * speed; 
         rigidbody2d.velocity = new Vector2(moveBy, rigidbody2d.velocity.y);
-
     }
 
     void Jump() 
     { 
         if (Input.GetKeyDown(KeyCode.Space) && (isGrounded || Time.time - lastTimeGrounded <= rememberGroundFor || additionalJumps > 0)) 
         { 
-            rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, jumpForce); 
+            rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, jumpForce);
             additionalJumps--;
 
             //animation
-
+            animator.SetTrigger("Jumping");
         } 
     }
 
@@ -134,6 +93,7 @@ public class playerController : MonoBehaviour
         if(collider != null)
         {
             isGrounded = true;
+            animator.SetBool("isFalling", false);
             additionalJumps = defaultAdditionalJumps;
         }
         else
@@ -143,6 +103,28 @@ public class playerController : MonoBehaviour
                 lastTimeGrounded = Time.time;
             }
             isGrounded = false;
+            animator.SetBool("isFalling", true);
         }
     }
+
+    void Flip(float lookDirection)
+    {
+        if (horizontal > 0 && !facingRight || horizontal < 0 && facingRight)
+        {
+            facingRight = !facingRight;
+
+            Vector3 theScale = transform.localScale;
+            theScale.x *= -1;
+            transform.localScale = theScale;
+        }
+    }
+/*
+    void Falling()
+    {
+        if (!isGrounded)
+        {
+            
+        }
+    }
+    */
 }

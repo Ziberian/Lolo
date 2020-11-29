@@ -14402,5 +14402,4 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   defaultAdditionalJumps: 1
-  horizontalAnimation: 0
-  lookDirection: 1
+  facingRight: 0
