@@ -27,6 +27,13 @@ public class playerController : MonoBehaviour
     public bool facingRight;
     //true = looking to the right
 
+    //hitting
+    public Transform hitBox;
+    public float hitRadius;
+    public LayerMask moveableObject;
+    public float hitPower = 5.0f;
+    public float hitTimer = 0.3f;   
+
     void Start()
     {
         rigidbody2d = GetComponent<Rigidbody2D>();
@@ -43,7 +50,7 @@ public class playerController : MonoBehaviour
         BetterJump();
         Move();
         CheckIfGrounded();
-        //Falling();
+        HitAnimation();
 
         //animation
         animator.SetFloat("runDirectionFloat", rigidbody2d.velocity.magnitude);
@@ -86,9 +93,36 @@ public class playerController : MonoBehaviour
         }
     }
 
+    void HitAnimation()
+    {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            animator.SetTrigger("Attacking");
+            Invoke("Hit", 0.3f);
+        }
+    }
+    
+    void Hit()
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(hitBox.position, hitRadius);
+
+        foreach (Collider2D hit in colliders)
+        {
+            Rigidbody2D rb = hit.GetComponent<Rigidbody2D>();
+
+            if (rb != null && rb.tag != "Player")
+            {
+                Vector2 direction = (rb.transform.position - transform.position).normalized;
+                direction.y += 1.0f;
+                Debug.Log(direction);   
+                rb.AddForce(direction * hitPower, ForceMode2D.Impulse);
+            }
+        }
+    }
+
     void CheckIfGrounded()
     {
-        Collider2D collider = Physics2D.OverlapCircle(isGroundedChecker.position, checkGroundRadius, groundLayer);
+        Collider2D collider = Physics2D.OverlapCircle(isGroundedChecker.position, checkGroundRadius);
 
         if(collider != null)
         {
@@ -118,13 +152,4 @@ public class playerController : MonoBehaviour
             transform.localScale = theScale;
         }
     }
-/*
-    void Falling()
-    {
-        if (!isGrounded)
-        {
-            
-        }
-    }
-    */
 }
