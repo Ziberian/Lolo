@@ -21,7 +21,7 @@ public class playerController : MonoBehaviour
     public LayerMask groundLayer;
     public int defaultAdditionalJumps = 1;
     int additionalJumps;
-
+    
     //animation
     Animator animator;
     public bool facingRight;
@@ -34,6 +34,11 @@ public class playerController : MonoBehaviour
     public float hitPower = 5.0f;
     public float hitTimer = 0.3f;   
 
+    //bomb
+    public GameObject bombPrefab;
+    Vector3 throwDirection;
+    public float throwSpeed = 5.0f;
+
     void Start()
     {
         rigidbody2d = GetComponent<Rigidbody2D>();
@@ -41,7 +46,6 @@ public class playerController : MonoBehaviour
         //animation
         animator = GetComponent<Animator>();
         facingRight = true;
-        
     }
 
     void Update()
@@ -54,6 +58,11 @@ public class playerController : MonoBehaviour
 
         //animation
         animator.SetFloat("runDirectionFloat", rigidbody2d.velocity.magnitude);
+
+        if(Input.GetKeyDown(KeyCode.G))
+        {
+            ThrowBomb();
+        }
     }
 
     void FixedUpdate()
@@ -121,8 +130,8 @@ public class playerController : MonoBehaviour
     }
 
     void CheckIfGrounded()
-    {
-        Collider2D collider = Physics2D.OverlapCircle(isGroundedChecker.position, checkGroundRadius);
+    {  
+        Collider2D collider = Physics2D.OverlapCircle(isGroundedChecker.position, checkGroundRadius, groundLayer);
 
         if(collider != null)
         {
@@ -151,5 +160,21 @@ public class playerController : MonoBehaviour
             theScale.x *= -1;
             transform.localScale = theScale;
         }
+    }
+
+    void ThrowBomb()
+    {
+        Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 throwDirection = (Vector2)((worldMousePos - transform.position));
+        throwDirection.Normalize ();
+
+        GameObject bombObject = Instantiate(bombPrefab, rigidbody2d.position, 
+        Quaternion.identity);
+
+        Physics2D.IgnoreCollision(bombObject.GetComponent<Collider2D>(), 
+        GetComponent<Collider2D>());
+        
+        Bomb bomb =  bombObject.GetComponent<Bomb>();
+        bomb.Launch(throwDirection, 500);
     }
 }

@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Box
+  - UnderPlayer
   layers:
   - Default
   - TransparentFX
@@ -18,7 +19,7 @@ TagManager:
   - Confiner
   - Player
   - Moveable Object
-  - 
+  - UnderPlayer
   - 
   - 
   - 
