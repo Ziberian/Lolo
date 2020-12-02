@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class Bomb : MonoBehaviour
 {
-    Animator animator;
-
+    public ParticleSystem exp;
     Rigidbody2D rigidbody2d;
-    public float delay = 3.0f;
-
+    
+    public float delay = 5.0f;
     float countdown;
     bool hasExploded = false;
 
@@ -33,7 +32,6 @@ public class Bomb : MonoBehaviour
 
     void Explode()
     {
-
         Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, radius);
 
         foreach (Collider2D hit in colliders)
@@ -49,12 +47,13 @@ public class Bomb : MonoBehaviour
             }
         }
 
+        ParticleSystem explosionEffect = Instantiate(exp, transform.position, Quaternion.identity);
         Destroy(gameObject);
-        animator.SetTrigger("Kaboom");
     }
 
     public void Launch(Vector2 direction, float force)
     {
+        direction.y = 2 * direction.y;
         rigidbody2d.AddForce(direction * force);
     }
 }

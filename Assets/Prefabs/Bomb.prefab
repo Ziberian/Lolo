@@ -148,6 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 529cb7137194b944093f15bf1683c240, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  exp: {fileID: 8176051956720648885, guid: f32e3ee5a684a6642a58d3b5ba0e0b3b, type: 3}
   delay: 3
   radius: 3
   explosionPower: 8
@@ -161,7 +162,7 @@ Animator:
   m_GameObject: {fileID: 3824423377614317068}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d2b351fd92a596f4e9dd93440228d725, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
