@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Box
   - UnderPlayer
+  - Bomb
   layers:
   - Default
   - TransparentFX

@@ -7,7 +7,7 @@ public class Bomb : MonoBehaviour
     public ParticleSystem exp;
     Rigidbody2D rigidbody2d;
     
-    public float delay = 5.0f;
+    public float delay = 2.5f;
     float countdown;
     bool hasExploded = false;
 
@@ -23,27 +23,34 @@ public class Bomb : MonoBehaviour
     void Update()
     {
         countdown -= Time.deltaTime;
-        if (countdown <= 0f && !hasExploded)
+        if (countdown <= 0f)
         {
             Explode();
-            hasExploded = true;
         }
     }
 
     void Explode()
     {
+        if (hasExploded)
+        {
+            return;
+        }
         Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, radius);
 
         foreach (Collider2D hit in colliders)
         {
             Rigidbody2D rb = hit.GetComponent<Rigidbody2D>();
 
-            if (rb != null && rb.tag != "Player")
+            if (rb != null && rb.tag != "Player" && hit.gameObject.transform != transform)
             {
                 Vector2 direction = (rb.transform.position - transform.position).normalized;
-                direction.y += 1.0f;
-                Debug.Log(direction);   
+                direction.y += 1.0f;  
                 rb.AddForce(direction * explosionPower, ForceMode2D.Impulse);
+                if (rb.tag == "Bomb")
+                {
+                    hasExploded = true;
+                    hit.GetComponent<Bomb>().Explode();
+                }
             }
         }
 

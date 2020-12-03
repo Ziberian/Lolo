@@ -56,14 +56,10 @@ public class playerController : MonoBehaviour
         Move();
         CheckIfGrounded();
         HitAnimation();
+        ThrowBomb();
 
         //animation
         animator.SetFloat("runDirectionFloat", rigidbody2d.velocity.magnitude);
-
-        if(Input.GetKeyDown(KeyCode.G))
-        {
-            ThrowBomb();
-        }
     }
 
     void FixedUpdate()
@@ -163,32 +159,39 @@ public class playerController : MonoBehaviour
     }
 
     void ThrowBomb()
-    {     
-           
-        Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 throwDirection = (Vector2)((worldMousePos - transform.position));
-        throwDirection.Normalize ();
+    {
+        if(Input.GetKeyDown(KeyCode.G))
+        {     
+            Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 throwDirection = (Vector2)((worldMousePos - transform.position));
+            throwDirection.Normalize ();
 
-        if (throwDirection.x >= 0 && facingRight || throwDirection.x <= 0 && !facingRight)
-        {
-            animator.SetTrigger("Throwing");
-            posAdj.x = 0.2f; 
-        }     
-        else
-        {
-            animator.SetTrigger("ThrowingLeft"); 
-            posAdj.x = -0.2f;
+            if (throwDirection.x >= 0 && facingRight || throwDirection.x <= 0 && !facingRight)
+            {
+                animator.SetTrigger("Throwing");
+                posAdj.x = 0.2f; 
+            }     
+            else
+            {
+                animator.SetTrigger("ThrowingLeft"); 
+                posAdj.x = -0.2f;
+            }
+
+            if (!facingRight)
+            {
+                posAdj.x *= -1;
+            }
+
+            posAdj.y = -0.4f;
+
+            GameObject bombObject = Instantiate(bombPrefab, rigidbody2d.position + posAdj, 
+            Quaternion.identity);
+
+            Physics2D.IgnoreCollision(bombObject.GetComponent<Collider2D>(), 
+            GetComponent<Collider2D>());
+            
+            Bomb bomb =  bombObject.GetComponent<Bomb>();
+            bomb.Launch(throwDirection, 500);
         }
-
-        posAdj.y = -0.4f;
-
-        GameObject bombObject = Instantiate(bombPrefab, rigidbody2d.position + posAdj, 
-        Quaternion.identity);
-
-        Physics2D.IgnoreCollision(bombObject.GetComponent<Collider2D>(), 
-        GetComponent<Collider2D>());
-        
-        Bomb bomb =  bombObject.GetComponent<Bomb>();
-        bomb.Launch(throwDirection, 500);
     }
 }
