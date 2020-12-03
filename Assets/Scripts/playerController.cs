@@ -37,7 +37,8 @@ public class playerController : MonoBehaviour
     //bomb
     public GameObject bombPrefab;
     Vector3 throwDirection;
-    public float throwSpeed = 5.0f;
+    public float throwSpeed = 4.0f;
+    new Vector2 posAdj;
 
     void Start()
     {
@@ -123,7 +124,6 @@ public class playerController : MonoBehaviour
             {
                 Vector2 direction = (rb.transform.position - transform.position).normalized;
                 direction.y += 1.0f;
-                Debug.Log(direction);   
                 rb.AddForce(direction * hitPower, ForceMode2D.Impulse);
             }
         }
@@ -163,12 +163,26 @@ public class playerController : MonoBehaviour
     }
 
     void ThrowBomb()
-    {
+    {     
+           
         Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 throwDirection = (Vector2)((worldMousePos - transform.position));
         throwDirection.Normalize ();
 
-        GameObject bombObject = Instantiate(bombPrefab, rigidbody2d.position, 
+        if (throwDirection.x >= 0 && facingRight || throwDirection.x <= 0 && !facingRight)
+        {
+            animator.SetTrigger("Throwing");
+            posAdj.x = 0.2f; 
+        }     
+        else
+        {
+            animator.SetTrigger("ThrowingLeft"); 
+            posAdj.x = -0.2f;
+        }
+
+        posAdj.y = -0.4f;
+
+        GameObject bombObject = Instantiate(bombPrefab, rigidbody2d.position + posAdj, 
         Quaternion.identity);
 
         Physics2D.IgnoreCollision(bombObject.GetComponent<Collider2D>(), 
